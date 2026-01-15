@@ -14,11 +14,11 @@ class TFTAutoPlayer:
         self.config = config
 
         self.accept_button_img = self.read_picture(self.config['accept_pic'])
-        self.find_game_img = self.read_picture(self.config['find_game_pic'])
-        self.leave_game_img = self.read_picture(self.config['leave_game_pic'])
+        self.find_game_img     = self.read_picture(self.config['find_game_pic'])
+        self.leave_game_img    = self.read_picture(self.config['leave_game_pic'])
         self.one_more_game_img = self.read_picture(self.config['one_more_pic'])
-        self.item_blue_img = self.read_picture(self.config['item_blue_pic'])
-        self.is_gaming_pic = self.read_picture(self.config['is_gaming_pic'])
+        self.item_blue_img     = self.read_picture(self.config['item_blue_pic'])
+        self.is_gaming_pic     = self.read_picture(self.config['is_gaming_pic'])
 
     def loop(self):
         """
@@ -64,20 +64,6 @@ class TFTAutoPlayer:
                 # 有機會截圖到這裡
                 self.click_item_blue_button(screenshot_gray, 0, 0)
                 self.click_leave_game_button(screenshot_gray, left, top)
-                
-
-
-            # hwnd_game = self.screen_service.find_lol_game_window()
-            # if hwnd_game is None:
-            #     continue
-            # left, top, _, _ = self.screen_service.get_window_rect(hwnd_game)
-            # pyautogui.click(x=left, y=top)
-            # screenshot = self.screen_service.get_screenshot(hwnd_game)
-            # screenshot_gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
-            # cv2.imwrite("images/current_game_screenshot.png", screenshot_gray)
-            # self.click_leave_game_button(screenshot_gray, left, top)
-            # time.sleep(3)
-
 
     def click_accept_button(self, screenshot: np.ndarray, left: int, top: int):
         """
@@ -88,7 +74,6 @@ class TFTAutoPlayer:
         if _match:
             self.status = GameStatus.FINDING_MATCH
             print("找到接受按鈕，準備點擊")
-            shot_height, shot_width = screenshot.shape
             button_x = left + max_loc[0] + self.accept_button_img.shape[1] // 2
             button_y = top + max_loc[1] + self.accept_button_img.shape[0] // 2
             self.screen_service.bring_window_to_front(self.screen_service.find_lol_client_window())
@@ -105,7 +90,6 @@ class TFTAutoPlayer:
         if _match:
             self.status = GameStatus.IN_LOBBY
             print("開始尋找遊戲")
-            shot_height, shot_width = screenshot.shape
             button_x = left + max_loc[0] + self.find_game_img.shape[1] // 2
             button_y = top + max_loc[1] + self.find_game_img.shape[0] // 2
             self.screen_service.bring_window_to_front(self.screen_service.find_lol_client_window())
@@ -122,7 +106,6 @@ class TFTAutoPlayer:
         if _match:
             self.status = GameStatus.IN_TFT_GAME
             print("找到離開遊戲按鈕，準備點擊")
-            shot_height, shot_width = screenshot.shape
             button_x = left + max_loc[0] + self.leave_game_img.shape[1] // 2
             button_y = top + max_loc[1] + self.leave_game_img.shape[0] // 2
             cv2.waitKey(100) 
@@ -152,7 +135,6 @@ class TFTAutoPlayer:
         if _match:
             self.status = GameStatus.POST_GAME_SCREEN
             print("找到再來一局按鈕，準備點擊")
-            shot_height, shot_width = screenshot.shape
             button_x = left + max_loc[0] + self.one_more_game_img.shape[1] // 2
             button_y = top + max_loc[1] + self.one_more_game_img.shape[0] // 2
             cv2.waitKey(100) 
@@ -168,7 +150,6 @@ class TFTAutoPlayer:
         if _match:
             self.status = GameStatus.IN_TFT_GAME
             print("找到藍色物品按鈕，準備點擊")
-            shot_height, shot_width = screenshot.shape
             button_x = left + max_loc[0] + self.item_blue_img.shape[1] // 2
             button_y = top + max_loc[1] + self.item_blue_img.shape[0] // 2
             cv2.waitKey(100) 
@@ -188,8 +169,6 @@ class TFTAutoPlayer:
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
         print(f"Template matching max value: {max_val}, threshold: {threshold}, ratio: {res_ratio}")
         return max_val >= threshold, max_loc
-
-    
 
     def read_picture(self, path: str) -> np.ndarray:
         """
