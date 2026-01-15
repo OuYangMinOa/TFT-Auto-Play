@@ -1,0 +1,24 @@
+pic_client_resolution:
+  width: 1600
+  height: 900
+
+pic_game_resolution:
+  width: 1920
+  height: 1080
+  
+accept_pic: images/accept_game.png
+find_game_pic: images/find_game.png
+leave_game_pic: images/leave_game.png
+one_more_pic: images/one_more.png
+item_blue_pic: images/item_b.png
+is_gaming_pic: images/gaming_word.png
+
+
+thresholds:
+  accept_button: 0.8
+  find_game_button: 0.8
+  leave_game_button: 0.8
+  one_more_button: 0.8
+  item_blue: 0.9
+  is_gaming: 0.8
+  
