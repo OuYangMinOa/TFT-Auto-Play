@@ -1,4 +1,5 @@
 from utils.screen.screen_service import LoLClientService
+from src.core.game_info import GameInfo
 
 import cv2
 
@@ -42,3 +43,14 @@ def test_screen_shot():
 
     for each_title, hwnd in service.get_all_window_titles():
         print(f"Title: {each_title}, Handle: {hwnd}, {each_title == 'League of Legends'}")
+
+
+def test_coin_screen_region():
+    service = LoLClientService()
+    hwnd_client = service.find_lol_client_window()
+    hwnd = service.find_lol_game_window()
+    service.minimize_window(hwnd_client)
+    screenshot = service.get_screenshot(hwnd)
+    screenshot_gray = cv2.cvtColor(screenshot, cv2.COLOR_BGRA2GRAY)
+    print(screenshot.shape)
+    print(GameInfo.get_coin(screenshot, (800, 765, 850, 785)))    

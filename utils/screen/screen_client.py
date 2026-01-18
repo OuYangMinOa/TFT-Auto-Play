@@ -1,6 +1,7 @@
 from typing import Optional
 
 import win32gui
+import win32con
 import numpy as np
 import mss
 
@@ -56,8 +57,32 @@ class ScreenClient:
         """Bring the specified window to the front.
         returns True if successful, otherwise False.
         """
-        if hwnd and win32gui.IsWindow(hwnd):
+        try:
+            win32gui.ShowWindow(hwnd, 9)
             win32gui.SetForegroundWindow(hwnd)
+        except Exception as e:
+            # 如果報錯是 183，通常代表已經在前台，可以忽略
+            if "183" in str(e):
+                print("視窗已在前台，無需切換") 
+            else:
+                print(f"無法切換視窗: {e}")
+    
+    def bring_window_to_back(self, hwnd: int) -> bool:
+        """Send the specified window to the back."""
+        if hwnd and win32gui.IsWindow(hwnd):
+            win32gui.SetWindowPos(
+                hwnd, 
+                win32con.HWND_BOTTOM, 
+                0, 0, 0, 0,
+                win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_NOACTIVATE
+            )
+            return True
+        return False
+    
+    def minimize_window(self, hwnd: int) -> bool:
+        if hwnd and win32gui.IsWindow(hwnd):
+            # 6 = SW_MINIMIZE
+            win32gui.ShowWindow(hwnd, 6)
             return True
         return False
     

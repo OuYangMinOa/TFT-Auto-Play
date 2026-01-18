@@ -9,9 +9,14 @@ pic_game_resolution:
 accept_pic: images/accept_game.png
 find_game_pic: images/find_game.png
 leave_game_pic: images/leave_game.png
+leave_game_pic2: images/leave2.png
 one_more_pic: images/one_more.png
 item_blue_pic: images/item_b.png
+item_w_pic: images/item_w.png
 is_gaming_pic: images/gaming_word.png
+update_btn_pic: images/update_btn.png
+update_star2_pic: images/update_star2.png
+temmo_pic: images/temmo.png #
 
 
 thresholds:
@@ -19,6 +24,10 @@ thresholds:
   find_game_button: 0.8
   leave_game_button: 0.8
   one_more_button: 0.8
-  item_blue: 0.9
+  item_blue: 0.7 
+  item_w: 0.7
   is_gaming: 0.8
+  update_btn: 0.8
+  update_star2: 0.75
+  temmo: 0.8
   
