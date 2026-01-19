@@ -41,6 +41,7 @@ class TFTAutoPlayer:
         self.status == GameStatus.SELECTING_ACCEPTS
 
         while True:
+            pyautogui.mouseUp()
             hwnd_client = self.screen_service.find_lol_client_window()
             
             if hwnd_client is None:
@@ -48,9 +49,9 @@ class TFTAutoPlayer:
                 continue
 
             if count == 50:
-                self.screen_service.bring_window_to_front(hwnd_client)
+                # self.screen_service.bring_window_to_front(hwnd_client)
+                self.status = GameStatus.UNKNOWN
                 count = 0
-
 
             left, top, _, _ = self.screen_service.get_window_rect(hwnd_client)
             screenshot = self.screen_service.get_screenshot(hwnd_client)
@@ -62,8 +63,9 @@ class TFTAutoPlayer:
             time.sleep(3)
 
             if self.status == GameStatus.SELECTING_ACCEPTS:
-                print("接受遊戲了...不確定是否會開始 ?")
-                self.status == GameStatus.UNKNOWN
+                print(f"接受遊戲了...不確定是否會開始 ? ({count}/50)")
+                count += 1
+                self.status = GameStatus.UNKNOWN
                 continue
 
             if self.status == GameStatus.UNKNOWN:
@@ -80,8 +82,10 @@ class TFTAutoPlayer:
                     left, top, right, bottom = self.screen_service.get_window_rect(hwnd_game)
                 except Exception as e:
                     continue
-                button_x = left + (right - left) // 3
-                button_y = top + (bottom - top) // 3
+                button_x = left + (right - left) // 2
+                button_y = top + (bottom - top) // 5
+                pyautogui.mouseUp()
+                pyautogui.mouseUp(button="right")
                 pyautogui.click(x= button_x, y=button_y)
                 time.sleep(2)
                 screenshot_game = self.screen_service.get_screenshot(hwnd_game)
@@ -89,18 +93,26 @@ class TFTAutoPlayer:
                 cv2.imwrite("images/full_screen_shot.png", screenshot_game_gray)
                 self.click_item_blue_button(screenshot_game_gray, left, top)
                 self.click_leave_game_button(screenshot_game_gray, left, top)
-                # other action
                 coin = GameInfo.get_coin(screenshot_game, (800, 765, 850, 785))
                 self.update_star2(screenshot_game_gray, left, top)
-                self.click_temmo(screenshot_game_gray, left, top)
 
+                for i in range(5):
+                    screenshot_game = self.screen_service.get_screenshot(hwnd_game)
+                    screenshot_game_gray = cv2.cvtColor(screenshot_game, cv2.COLOR_BGR2GRAY)
+                    cv2.imwrite("images/full_screen_shot.png", screenshot_game_gray)
+                    self.click_temmo(screenshot_game_gray, left, top)
+
+                screenshot_game = self.screen_service.get_screenshot(hwnd_game)
+                screenshot_game_gray = cv2.cvtColor(screenshot_game, cv2.COLOR_BGR2GRAY)
+                cv2.imwrite("images/full_screen_shot.png", screenshot_game_gray)
+                
                 if isinstance(coin, int) and  coin > 54:
                     print(f"很多錢 - 升等 - {coin}")
                     update_time = (coin - 50) //4
                     self.update_witg_time(screenshot_game_gray, left, top, update_time)
 
                 time.sleep(1)
-            count += 1
+            
     
     def random_click_champ(self, screenshot: np.ndarray, left, top):
         threshold = self.config['thresholds']['update_btn']
@@ -169,6 +181,8 @@ class TFTAutoPlayer:
                 time.sleep(0.05)
                 pyautogui.mouseUp(button_x, button_y)
                 time.sleep(0.1)
+            pyautogui.mouseUp()
+            
         else:
             return 
 
@@ -262,6 +276,7 @@ class TFTAutoPlayer:
             cv2.waitKey(100) 
             pyautogui.click(x=button_x, y=button_y)
             self.status = GameStatus.IN_LOBBY
+            time.sleep(12)
 
     def click_item_blue_button(self, screenshot: np.ndarray, left: int, top: int):
         """
@@ -277,7 +292,8 @@ class TFTAutoPlayer:
             button_y = top + max_loc[1] + self.item_blue_img.shape[0] // 2
             cv2.waitKey(100) 
             pyautogui.mouseDown(x=button_x, y=button_y, button='right')
-            time.sleep(5)
+            time.sleep(3)
+            pyautogui.mouseUp()
 
 
         threshold = self.config['thresholds']['item_w']
@@ -290,7 +306,8 @@ class TFTAutoPlayer:
             button_y = top + max_loc[1] + self.item_w_img.shape[0] // 2
             cv2.waitKey(100) 
             pyautogui.mouseDown(x=button_x, y=button_y, button='right')
-            time.sleep(5)
+            time.sleep(3)
+            pyautogui.mouseUp()
 
 
 
