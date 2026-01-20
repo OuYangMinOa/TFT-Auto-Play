@@ -41,7 +41,9 @@ class TFTAutoPlayer:
         self.status == GameStatus.SELECTING_ACCEPTS
 
         while True:
-            pyautogui.mouseUp()
+            # pyautogui.mouseUp(button="right")
+            # pyautogui.mouseUp()
+            # pyautogui.click()
             hwnd_client = self.screen_service.find_lol_client_window()
             
             if hwnd_client is None:
@@ -49,7 +51,6 @@ class TFTAutoPlayer:
                 continue
 
             if count == 50:
-                # self.screen_service.bring_window_to_front(hwnd_client)
                 self.status = GameStatus.UNKNOWN
                 count = 0
 
@@ -84,9 +85,10 @@ class TFTAutoPlayer:
                     continue
                 button_x = left + (right - left) // 2
                 button_y = top + (bottom - top) // 5
+                pyautogui.moveTo(x = button_x, y = button_y)
                 pyautogui.mouseUp()
                 pyautogui.mouseUp(button="right")
-                pyautogui.click(x= button_x, y=button_y)
+                pyautogui.click()
                 time.sleep(2)
                 screenshot_game = self.screen_service.get_screenshot(hwnd_game)
                 screenshot_game_gray = cv2.cvtColor(screenshot_game, cv2.COLOR_BGR2GRAY)
@@ -292,8 +294,10 @@ class TFTAutoPlayer:
             button_y = top + max_loc[1] + self.item_blue_img.shape[0] // 2
             cv2.waitKey(100) 
             pyautogui.mouseDown(x=button_x, y=button_y, button='right')
+            time.sleep(0.1)
+            pyautogui.mouseUp(button='right')
+            pyautogui.click()
             time.sleep(3)
-            pyautogui.mouseUp()
 
 
         threshold = self.config['thresholds']['item_w']
@@ -306,8 +310,11 @@ class TFTAutoPlayer:
             button_y = top + max_loc[1] + self.item_w_img.shape[0] // 2
             cv2.waitKey(100) 
             pyautogui.mouseDown(x=button_x, y=button_y, button='right')
+            time.sleep(0.1)
+            pyautogui.mouseUp(button='right')
+            pyautogui.click()
             time.sleep(3)
-            pyautogui.mouseUp()
+
 
 
 
