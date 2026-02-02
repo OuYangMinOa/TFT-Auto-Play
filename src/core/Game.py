@@ -8,6 +8,8 @@ import pyautogui
 import time
 import cv2
 
+pyautogui.FAILSAFE = False
+
 class TFTAutoPlayer:
     def __init__(self, config: dict):
         self.screen_service = LoLClientService()
@@ -95,7 +97,6 @@ class TFTAutoPlayer:
                 cv2.imwrite("images/full_screen_shot.png", screenshot_game_gray)
                 self.click_item_blue_button(screenshot_game_gray, left, top)
                 self.click_leave_game_button(screenshot_game_gray, left, top)
-                coin = GameInfo.get_coin(screenshot_game, (800, 765, 850, 785))
                 self.update_star2(screenshot_game_gray, left, top)
 
                 for i in range(5):
@@ -107,10 +108,11 @@ class TFTAutoPlayer:
                 screenshot_game = self.screen_service.get_screenshot(hwnd_game)
                 screenshot_game_gray = cv2.cvtColor(screenshot_game, cv2.COLOR_BGR2GRAY)
                 cv2.imwrite("images/full_screen_shot.png", screenshot_game_gray)
-                
+                coin = GameInfo.get_coin(screenshot_game, (800, 765, 850, 785))
+
                 if isinstance(coin, int) and  coin > 54:
                     print(f"很多錢 - 升等 - {coin}")
-                    update_time = (coin - 50) //4
+                    update_time = (coin - 54) //4
                     self.update_witg_time(screenshot_game_gray, left, top, update_time)
 
                 time.sleep(1)
@@ -322,15 +324,19 @@ class TFTAutoPlayer:
         """
         比較截圖與範本圖片是否相似，若相似度高於閾值則回傳True。
         """
-        shot_height, shot_width = screenshot.shape
-        res_ratio = (shot_width / self.config['pic_client_resolution']['width'], shot_height / self.config['pic_client_resolution']['height'])
-        # 調整接受按鈕圖片大小以符合當前解析度
-        template_resized = cv2.resize(template, (int(template.shape[1] * res_ratio[0]), int(template.shape[0] * res_ratio[1])))
-        cv2.imwrite("images/resized.png", template_resized)
-        result = cv2.matchTemplate(screenshot, template_resized, cv2.TM_CCOEFF_NORMED)
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-        print(f"Template matching max value: {max_val}, threshold: {threshold}, ratio: {res_ratio}")
-        return max_val >= threshold, max_loc
+        try:
+                
+            shot_height, shot_width = screenshot.shape
+            res_ratio = (shot_width / self.config['pic_client_resolution']['width'], shot_height / self.config['pic_client_resolution']['height'])
+            # 調整接受按鈕圖片大小以符合當前解析度
+            template_resized = cv2.resize(template, (int(template.shape[1] * res_ratio[0]), int(template.shape[0] * res_ratio[1])))
+            cv2.imwrite("images/resized.png", template_resized)
+            result = cv2.matchTemplate(screenshot, template_resized, cv2.TM_CCOEFF_NORMED)
+            min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+            # print(f"Template matching max value: {max_val}, threshold: {threshold}, ratio: {res_ratio}")
+            return max_val >= threshold, max_loc
+        except:
+            return False
 
     def read_picture(self, path: str) -> np.ndarray:
         """
